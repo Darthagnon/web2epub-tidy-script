@@ -34,7 +34,33 @@ class MagicWizardsParser extends Parser {
             // For live pages
             chapterLinks = [...dom.querySelectorAll("article a, .article-content a")];
         }
+        
+        // Filter out author links using their URL pattern
+        chapterLinks = chapterLinks.filter(link => !this.isAuthorLink(link));
+        
         return chapterLinks.map(this.linkToChapter).reverse();
+    }
+
+    // Helper function to detect if a link is an author link
+    isAuthorLink(link) {
+        const href = link.href;
+        const authorPattern = /\/archive\?author=/;
+        const cssPattern = "#primary-area > div > section.css-gC8BF.css-qNxDH > div > div.css-3c0LG.css-ipRAf > div.css-Nm7vm > article:nth-child(1) > div.css-3qxBv > div.css-dbmZ3";
+        
+        // Check if the link matches the author URL pattern or CSS selector
+        if (authorPattern.test(href)) {
+            return true;
+        }
+        
+        // Optional: filter by specific CSS class if needed (applicable only to live content)
+        if (window.location.hostname.includes("web.archive.org")) {
+            const parent = link.closest(cssPattern);
+            if (parent) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // Format chapter links into a standardized structure
@@ -74,8 +100,7 @@ class MagicWizardsParser extends Parser {
 
     // Remove unwanted elements (ads, scripts, etc.)
     removeUnwantedElementsFromContentElement(element) {
-        let toRemove = [...element.querySelectorAll("p")]
-            .filter(p => p.style.opacity === "0");
+        let toRemove = [...element.querySelectorAll("p")].filter(p => p.style.opacity === "0");
         util.removeElements(toRemove);
         util.removeElements(this.findEmptySpanElements(element));
         util.removeChildElementsMatchingCss(element, "span.modern-footnotes-footnote__note");
