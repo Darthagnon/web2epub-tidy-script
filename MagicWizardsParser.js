@@ -2,26 +2,10 @@
 
 // Register the parser for magic.wizards.com and archive versions
 parserFactory.register("magic.wizards.com", () => new MagicWizardsParser());
-parserFactory.register("web.archive.org", () => new MagicWizardsParser()); // For archived versions
-parserFactory.registerRule(
-    (url, dom) => MagicWizardsParser.isMagicWizardsTheme(dom) * 0.7,
-    () => new MagicWizardsParser()
-);
 
 class MagicWizardsParser extends Parser {
     constructor() {
         super();
-    }
-
-    // Detect if the site matches the expected structure for magic.wizards.com or the archived version
-    static isMagicWizardsTheme(dom) {
-        // Check if the page is archived
-        if (window.location.hostname.includes("web.archive.org")) {
-            // Archived page structure typically wraps the original content in #content
-            return dom.querySelector("#content article") != null || dom.querySelector("#content .article-content") != null;
-        }
-        // Regular magic.wizards.com structure
-        return dom.querySelector("article") != null || dom.querySelector(".article-content") != null;
     }
 
     // Extract the list of chapter URLs
