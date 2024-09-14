@@ -1,7 +1,8 @@
 "use strict";
 
-// Register the parser for magic.wizards.com and archive versions
+// Register the parser for magic.wizards.com (archive.org is implicit) TODO: mtglore.com
 parserFactory.register("magic.wizards.com", () => new MagicWizardsParser());
+//parserFactory.register("mtglore.com", () => new MagicWizardsParser());
 
 class MagicWizardsParser extends Parser {
     constructor() {
