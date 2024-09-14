@@ -41,7 +41,14 @@ class MagicWizardsParser extends Parser {
 
     // Format chapter links into a standardized structure
     linkToChapter(link) {
-        let title = link.textContent.trim();
+        let titleElement;
+    
+        // Try to find the <h3> tag inside the parent of the link (assuming link is inside <article>)
+        titleElement = link.closest("article").querySelector("h3");
+    
+        // Fallback to the link text itself if no titleElement found (this handles simpler cases)
+        let title = titleElement ? titleElement.textContent.trim() : link.textContent.trim();
+    
         return {
             sourceUrl: link.href,
             title: title
