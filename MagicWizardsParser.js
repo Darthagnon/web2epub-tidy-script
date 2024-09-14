@@ -17,7 +17,7 @@ class MagicWizardsParser extends Parser {
             chapterLinks = [...dom.querySelectorAll("#content article a, #content .article-content a")];
         } else {
             // For live pages
-            chapterLinks = [...dom.querySelectorAll("article a, .article-content a")];
+            chapterLinks = [...dom.querySelectorAll("article a, .article-content a, window.location.hostname")];
         }
         
         // Filter out author links using their URL pattern
@@ -62,7 +62,7 @@ class MagicWizardsParser extends Parser {
             return dom.querySelector("#content article");
         } else {
             // For live pages
-            return dom.querySelector("#article-body article");
+            return dom.querySelector("#article-body article, #primary-area section, section article, section");
         }
     }
     
