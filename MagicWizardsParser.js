@@ -62,8 +62,26 @@ class MagicWizardsParser extends Parser {
             return dom.querySelector("#content article");
         } else {
             // For live pages
-            return dom.querySelector(".entry-content, article, .article-content");
+            return dom.querySelector("#article-body article");
         }
     }
+    
+findCoverImageUrl(dom) {
+    // Try to find an image inside the '.swiper-slide' or inside an 'article'
+    let imgElement = dom.querySelector(".swiper-slide img, article img");
+
+    // If an image is found, return its 'src' attribute
+    if (imgElement) {
+        return imgElement.getAttribute("src");
+    // Check if the URL starts with '//' (protocol-relative URL)
+        if (imgSrc && imgSrc.startsWith("//")) {
+            // Add 'https:' to the start of the URL
+            imgSrc = "https:" + imgSrc;
+        }
+    }
+    // Fallback if no image was found
+    return null;
+}
+
 
 }

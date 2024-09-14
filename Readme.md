@@ -26,10 +26,12 @@ Works for story index pages such as:
 - https://magic.wizards.com/en/story 
 
 Known issues:
+- Does not yet read the Planes/Planeswalkers databank `#databank > a`
 - Excludes author names
 - Does not crawl paginated indexes beyond the 1st page
 - Does not yet work for https://mtglore.com/
 - Ignores chapter index thumbnails and chapter summary blurbs (Unfixable?)
+- Cover art is stripped of `http:` by [ImageCollector.js](https://github.com/dteviot/WebToEpub/blob/ExperimentalTabMode/plugin/js/ImageCollector.js), which must be manually added for cover art to work
 - Uses 1st chapter index thumbnail as cover art, rather than page hero image (not worth fixing? There are no proper book covers provided, best to Photoshop your own)
 - New (ca. Q2 2024) articles use WEBP images; these are downloaded, but cannot be rendered. Web2EPUB does not convert WEBP to JPG; this must be done manually
 - Twitter embeds (featured heavily in Maro articles) are untested, probably broken. They should be screenshotted manually using https://screenshot.guru/ or equivalent.
