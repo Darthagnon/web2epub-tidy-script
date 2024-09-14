@@ -22,119 +22,40 @@ class MagicWizardsParser extends Parser {
         // Filter out author links using their URL pattern
         chapterLinks = chapterLinks.filter(link => !this.isAuthorLink(link));
         
-        return chapterLinks.map(this.linkToChapter).reverse();
+        return chapterLinks.map(this.linkToChapter);
     }
 
     // Helper function to detect if a link is an author link
     isAuthorLink(link) {
         const href = link.href;
         const authorPattern = /\/archive\?author=/;
-        const cssPattern = "#primary-area > div > section.css-gC8BF.css-qNxDH > div > div.css-3c0LG.css-ipRAf > div.css-Nm7vm > article:nth-child(1) > div.css-3qxBv > div.css-dbmZ3";
         
         // Check if the link matches the author URL pattern or CSS selector
         if (authorPattern.test(href)) {
             return true;
+        } else {
+            return false;
         }
-        
-        // Optional: filter by specific CSS class if needed (applicable only to live content)
-        if (window.location.hostname.includes("web.archive.org")) {
-            const parent = link.closest(cssPattern);
-            if (parent) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     // Format chapter links into a standardized structure
     linkToChapter(link) {
-        let title = MagicWizardsParser.extractChapterNum(link).trim() + " " + link.textContent.trim();
+        let title = link.textContent.trim();
         return {
             sourceUrl: link.href,
             title: title
         };
     }
 
-    // Extract chapter numbers if available (otherwise use fallback)
-    static extractChapterNum(link) {
-        let chapterNum = link.querySelector(".chapter_num");
-        return chapterNum == null ? link.textContent : chapterNum.textContent;
-    }
-
     // Extract the content of the chapter
     findContent(dom) {
         if (window.location.hostname.includes("web.archive.org")) {
             // For archived pages, the content is often inside #content
-            return dom.querySelector("#content .entry-content, #content article, #content .article-content");
+            return dom.querySelector("#content article");
+        } else {
+            // For live pages
+            return dom.querySelector(".entry-content, article, .article-content");
         }
-        // For live pages
-        return dom.querySelector(".entry-content, article, .article-content");
     }
 
-    // Extract the main title of the webpage (article title)
-    extractTitleImpl(dom) {
-        if (window.location.hostname.includes("web.archive.org")) {
-            // For archived pages
-            return dom.querySelector("#content h1.entry-title, #content h1.article-title, #content h1") || "Untitled";
-        }
-        // For live pages
-        return dom.querySelector("h1.entry-title, h1.article-title, h1") || "Untitled";
-    }
-
-    // Remove unwanted elements (ads, scripts, etc.)
-    removeUnwantedElementsFromContentElement(element) {
-        let toRemove = [...element.querySelectorAll("p")].filter(p => p.style.opacity === "0");
-        util.removeElements(toRemove);
-        util.removeElements(this.findEmptySpanElements(element));
-        util.removeChildElementsMatchingCss(element, "span.modern-footnotes-footnote__note");
-        util.removeChildElementsMatchingCss(element, "span.footnote_tooltip");
-        util.removeChildElementsMatchingCss(element, "div#hpk");
-        super.removeUnwantedElementsFromContentElement(element);
-    }
-
-    // Find and remove empty <span> elements
-    findEmptySpanElements(element) {
-        return [...element.querySelectorAll("span")].filter(s => !s.firstChild);
-    }
-
-    // Find the chapter title (uses webpage title if specific one isn't found)
-    findChapterTitle(dom, webPage) {
-        return webPage.title;
-    }
-
-    // Build a comprehensive chapter title from multiple elements (if necessary)
-    static buildChapterTitle(dom) {
-        let title = "";
-        let addText = (selector) => {
-            let element = dom.querySelector(selector);
-            if (element != null) {
-                title += " " + element.textContent;
-            }
-        };
-        addText("h1.entry-title");
-        addText(".cat-series");
-        return title;
-    }
-
-    // Find the cover image for the chapter/book
-    findCoverImageUrl(dom) {
-        if (window.location.hostname.includes("web.archive.org")) {
-            // For archived pages, images might be wrapped in the #content container
-            return util.getFirstImgSrc(dom, "#content .article-cover img, #content .thumbook, #content .sertothumb");
-        }
-        // For live pages
-        return util.getFirstImgSrc(dom, ".article-cover img, .thumbook, .sertothumb");
-    }
-
-    // Preprocess the DOM to remove unnecessary elements (cleaning the page)
-    preprocessRawDom(webPageDom) {
-        util.removeChildElementsMatchingCss(webPageDom, "div.saboxplugin-wrap, div.code-block");
-    }
-
-    // Get additional information for the EPUB (optional metadata)
-    getInformationEpubItemChildNodes(dom) {
-        let info = dom.querySelector("div.synp .entry-content, div.sersys.entry-content");
-        return info == null ? [] : [info];
-    }
 }
