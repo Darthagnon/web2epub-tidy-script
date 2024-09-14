@@ -26,7 +26,7 @@ Works for story index pages such as:
 - https://magic.wizards.com/en/story 
 
 Known issues:
-- Does not yet read the Planes/Planeswalkers databank `#databank > a`
+- Does not yet read the Planes/Planeswalkers databank `#databank > a` or their articles under e.g. https://magic.wizards.com/en/story/dominaria-plane
 - Excludes author names
 - Does not crawl paginated indexes beyond the 1st page
 - Does not yet work for https://mtglore.com/
